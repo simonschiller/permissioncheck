@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.github.simonschiller.permissioncheck.sample.library">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="26" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+</manifest>

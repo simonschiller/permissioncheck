@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<baseline>
+    <variant name="debug">
+        <uses-permission name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        <uses-permission maxSdkVersion="27" name="android.permission.INTERNET"/>
+        <uses-permission name="android.permission.ACCESS_NETWORK_STATE"/>
+        <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_COARSE_LOCATION"/>
+        <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_FINE_LOCATION"/>
+        <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+    </variant>
+    <variant name="release">
+        <uses-permission name="android.permission.CAMERA"/>
+        <uses-permission maxSdkVersion="27" name="android.permission.INTERNET"/>
+        <uses-permission name="android.permission.ACCESS_NETWORK_STATE"/>
+        <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_COARSE_LOCATION"/>
+        <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_FINE_LOCATION"/>
+        <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+    </variant>
+</baseline>
