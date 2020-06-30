@@ -39,6 +39,7 @@ class PermissionCheckPlugin : Plugin<Project> {
             mergedManifest.set(getMergedManifestFile(variant)) // Takes care of task dependencies
             baseline.set(project.layout.projectDirectory.file("permission-baseline.xml"))
             recreate.set(false)
+            strict.set(false)
         }
 
         // Execute the task as part of the standard Gradle check task
