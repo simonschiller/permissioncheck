@@ -43,6 +43,10 @@ open class PermissionCheckTask : DefaultTask() {
     @Option(option = "recreate", description = "Recreates the permissions baseline if specified")
     val recreate: Property<Boolean> = project.objects.property()
 
+    @Input
+    @Option(option = "strict", description = "Perform strict checking (also detect permission removals, ...)")
+    val strict: Property<Boolean> = project.objects.property()
+
     @TaskAction
     fun checkAppPermissions() {
         val manifestParser = ManifestParser()
@@ -64,7 +68,8 @@ open class PermissionCheckTask : DefaultTask() {
 
         // Parse the existing baseline
         val baselinePermissions = baselineHandler.deserialize()
-        if (!baselinePermissions.containsKey(variant)) {
+        val variantPermissions = baselinePermissions[variant]
+        if (variantPermissions == null) {
             baselineHandler.serialize(variant, manifestPermissions) // Create new baseline for variant
             project.logger.lifecycle("Created baseline for variant $variant at $baselineFile")
             abortBuild()
@@ -72,7 +77,7 @@ open class PermissionCheckTask : DefaultTask() {
 
         // Make sure the current permissions match the ones from the baseline
         val permissionChecker = PermissionChecker()
-        val violations = permissionChecker.findViolations(baselinePermissions.getValue(variant), manifestPermissions)
+        val violations = permissionChecker.findViolations(variantPermissions, manifestPermissions, strict.get())
         if (violations.isEmpty()) {
             project.logger.lifecycle("Found no violations, all permissions match the baseline")
         } else {

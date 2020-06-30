@@ -152,6 +152,29 @@ class PermissionCheckTaskIntegrationTest {
     }
 
     @Test
+    fun `Task fails if there are strict mode violations and strict mode is enabled`() {
+        baselineFile.writeText("""
+            <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <baseline>
+                <variant name="debug">
+                    <uses-permission name="android.permission.INTERNET"/>
+                    <uses-permission name="android.permission.ACCESS_FINE_LOCATION"/>
+                    <uses-permission maxSdkVersion="24" name="android.permission.CAMERA"/>
+                    <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                </variant>
+            </baseline>
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(androidProject.rootDir)
+            .withPluginClasspath()
+            .withArguments("checkDebugPermissions", "--strict")
+            .buildAndFail()
+
+        assertTrue(buildResult.output.contains("Found 2 violation(s)"))
+    }
+
+    @Test
     fun `All variants are checked as part of the default check task`() {
         baselineFile.writeText("""
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>

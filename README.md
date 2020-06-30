@@ -16,13 +16,17 @@ Once the baseline exists, each subsequent invocation of `check<Variant>Permissio
 
 When you deliberately want to add new permissions to the app, you need to recreate the baseline so it matches the updated permissions. You can either add the new entry to the baseline manually or just recreate it using `check<Variant>Permissions --recreate`.
 
+#### Strict mode
+
+By default, PermissionCheck only reports issues that would cause the app to require more permissions than specified in the baseline. In case a permission is removed or the max SDK of a permission is decreased, the tasks would not fail. To also detect these cases, you can use the `--strict` command line option.
+
 ## Adding the plugin to your project
 
 To add the PermissionCheck plugin to your project, you have to add this block of code to your `build.gradle`.
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.0.0"
+    id "io.github.simonschiller.permissioncheck" version "1.1.0"
 }
 ```
 
@@ -36,7 +40,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.0.0"
+        classpath "io.github.simonschiller:permissioncheck:1.1.0"
     }
 }
 ```

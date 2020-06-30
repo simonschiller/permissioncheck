@@ -7,7 +7,8 @@ internal class PermissionChecker {
 
     fun findViolations(
         baselinePermissions: Set<BasePermission>,
-        manifestPermissions: Set<BasePermission>
+        manifestPermissions: Set<BasePermission>,
+        strict: Boolean = false
     ): List<Violation> {
         val violations = mutableListOf<Violation>()
 
@@ -37,8 +38,12 @@ internal class PermissionChecker {
             violations += Violation.Removed(baseline[baselineIndex++])
         }
 
-        // We're currently only interested in non-strict violations
-        return violations.filterNot(Violation::strict)
+        // If we're not running in strict mode, filter out the strict violations
+        return if (strict) {
+            violations
+        } else {
+            violations.filterNot(Violation::strict)
+        }
     }
 
     // Computes the correct violation for two permissions with the same name and tag
