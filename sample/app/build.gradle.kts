@@ -19,3 +19,8 @@ android {
 dependencies {
 	implementation(project(":sample:library"))
 }
+
+permissionCheck {
+	baselineFile.set(layout.projectDirectory.file("sample-baseline.xml"))
+	strict.set(true)
+}

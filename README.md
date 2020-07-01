@@ -18,7 +18,21 @@ When you deliberately want to add new permissions to the app, you need to recrea
 
 #### Strict mode
 
-By default, PermissionCheck only reports issues that would cause the app to require more permissions than specified in the baseline. In case a permission is removed or the max SDK of a permission is decreased, the tasks would not fail. To also detect these cases, you can use the `--strict` command line option.
+By default, PermissionCheck only reports issues that would cause the app to require more permissions than specified in the baseline. In case a permission is removed or the max SDK of a permission is decreased, the tasks would not fail. To also detect these cases, you can enable strict mode in the task configuration (see next section) or use the `--strict` command line option.
+
+#### Configuring the tasks
+
+For greater customization, you can change the default behaviour of the tasks using the Gradle DSL.
+
+```groovy
+permissionCheck {
+    // Location of the baseline file, defaults to "$projectDir/permission-baseline.xml"
+    baselineFile.set(layout.projectDirectory.file("baselines/permissions.xml"))
+    
+    // Always perform strict checking, defaults to false
+    strict.set(true)
+}
+```
 
 ## Adding the plugin to your project
 
@@ -26,7 +40,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.1.0"
+    id "io.github.simonschiller.permissioncheck" version "1.2.0"
 }
 ```
 
@@ -40,7 +54,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.1.0"
+        classpath "io.github.simonschiller:permissioncheck:1.2.0"
     }
 }
 ```
