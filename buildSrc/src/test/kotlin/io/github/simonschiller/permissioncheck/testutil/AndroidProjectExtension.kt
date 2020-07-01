@@ -61,6 +61,7 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
                     check("")
                 }
             }
+            
         """.trimIndent())
     }
 

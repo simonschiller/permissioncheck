@@ -152,7 +152,7 @@ class PermissionCheckTaskIntegrationTest {
     }
 
     @Test
-    fun `Task fails if there are strict mode violations and strict mode is enabled`() {
+    fun `Task fails if there are strict mode violations and strict mode is enabled via command line`() {
         baselineFile.writeText("""
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <baseline>
@@ -169,6 +169,36 @@ class PermissionCheckTaskIntegrationTest {
             .withProjectDir(androidProject.rootDir)
             .withPluginClasspath()
             .withArguments("checkDebugPermissions", "--strict")
+            .buildAndFail()
+
+        assertTrue(buildResult.output.contains("Found 2 violation(s)"))
+    }
+
+    @Test
+    fun `Task fails if there are strict mode violations and strict mode is enabled via configuration`() {
+        val buildGradleFile = androidProject.rootDir.resolve("build.gradle")
+        buildGradleFile.appendText("""
+            permissionCheck {
+                strict.set(true)
+            }
+        """.trimIndent())
+
+        baselineFile.writeText("""
+            <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <baseline>
+                <variant name="debug">
+                    <uses-permission name="android.permission.INTERNET"/>
+                    <uses-permission name="android.permission.ACCESS_FINE_LOCATION"/>
+                    <uses-permission maxSdkVersion="24" name="android.permission.CAMERA"/>
+                    <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                </variant>
+            </baseline>
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(androidProject.rootDir)
+            .withPluginClasspath()
+            .withArguments("checkDebugPermissions")
             .buildAndFail()
 
         assertTrue(buildResult.output.contains("Found 2 violation(s)"))
@@ -200,5 +230,44 @@ class PermissionCheckTaskIntegrationTest {
 
         assertTrue(buildResult.tasks.any { it.path == ":checkDebugPermissions" })
         assertTrue(buildResult.tasks.any { it.path == ":checkReleasePermissions" })
+    }
+
+    @Test
+    fun `Configuring a different baseline location works correctly` () {
+        val buildGradleFile = androidProject.rootDir.resolve("build.gradle")
+        buildGradleFile.appendText("""
+            permissionCheck {
+                baselineFile.set(layout.projectDirectory.file("baselines/test-baseline.xml"))
+            }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(androidProject.rootDir)
+            .withPluginClasspath()
+            .withArguments("checkDebugPermissions")
+            .buildAndFail()
+
+        val baselineFile = androidProject.rootDir.resolve("baselines").resolve("test-baseline.xml")
+        assertTrue(buildResult.output.contains(baselineFile.path))
+        assertTrue(baselineFile.exists())
+        assertFalse(androidProject.rootDir.resolve("permission-baseline.xml").exists())
+    }
+
+    @Test
+    fun `Task fails if the specified baseline is not an XML file`() {
+        val buildGradleFile = androidProject.rootDir.resolve("build.gradle")
+        buildGradleFile.appendText("""
+            permissionCheck {
+                baselineFile.set(layout.projectDirectory.file("invalid-baseline.json"))
+            }
+        """.trimIndent())
+
+        val buildResult = GradleRunner.create()
+            .withProjectDir(androidProject.rootDir)
+            .withPluginClasspath()
+            .withArguments("checkDebugPermissions")
+            .buildAndFail()
+
+        assertTrue(buildResult.output.contains("The permission baseline has to be a .xml file"))
     }
 }

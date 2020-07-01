@@ -11,9 +11,11 @@ import org.gradle.api.provider.Provider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import java.util.*
 
+@Suppress("UnstableApiUsage")
 class PermissionCheckPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
+        val extension = project.extensions.create("permissionCheck", PermissionCheckExtension::class.java)
 
         // Register tasks once the Android app plugin is available
         project.plugins.configureEach {
@@ -23,12 +25,12 @@ class PermissionCheckPlugin : Plugin<Project> {
 
             val appExtension = project.extensions.getByType(AppExtension::class.java)
             appExtension.applicationVariants.configureEach {
-                registerTask(project, this)
+                registerTask(project, this, extension)
             }
         }
     }
 
-    private fun registerTask(project: Project, variant: ApplicationVariant) {
+    private fun registerTask(project: Project, variant: ApplicationVariant, extension: PermissionCheckExtension) {
         val taskName = "check${variant.name.capitalize(Locale.ROOT)}Permissions"
 
         val task = project.tasks.register(taskName, PermissionCheckTask::class.java) {
@@ -36,10 +38,10 @@ class PermissionCheckPlugin : Plugin<Project> {
             description = "Checks ${variant.name} permissions for regressions"
 
             variantName.set(variant.name)
-            mergedManifest.set(getMergedManifestFile(variant)) // Takes care of task dependencies
-            baseline.set(project.layout.projectDirectory.file("permission-baseline.xml"))
+            mergedManifest.set(getMergedManifestFile(variant)) // Takes care of task dependencies automatically
+            baseline.set(extension.baselineFile)
             recreate.set(false)
-            strict.set(false)
+            strict.set(extension.strict)
         }
 
         // Execute the task as part of the standard Gradle check task
@@ -51,7 +53,8 @@ class PermissionCheckPlugin : Plugin<Project> {
     // Extracts the location of the merged manifest
     private fun getMergedManifestFile(variant: ApplicationVariant): Provider<RegularFile> {
         val output = variant.outputs.single { it.outputType == VariantOutput.MAIN }
-        val outputDirectory = output.processManifestProvider.get().manifestOutputDirectory
-        return outputDirectory.file("AndroidManifest.xml")
+        return output.processManifestProvider.flatMap { task ->
+            task.manifestOutputDirectory.file("AndroidManifest.xml")
+        }
     }
 }
