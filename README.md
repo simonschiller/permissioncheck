@@ -28,6 +28,9 @@ For greater customization, you can change the default behaviour of the tasks usi
 permissionCheck {
     // Location of the baseline file, defaults to "$projectDir/permission-baseline.xml"
     baselineFile.set(layout.projectDirectory.file("baselines/permissions.xml"))
+
+    // Directory for all generated reports, defaults to "$project.buildDir/reports/permissioncheck"
+    reportDirectory.set(layout.buildDirectory.dir("reports"))
     
     // Always perform strict checking, defaults to false
     strict.set(true)
@@ -40,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.2.0"
+    id "io.github.simonschiller.permissioncheck" version "1.3.0"
 }
 ```
 
@@ -54,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.2.0"
+        classpath "io.github.simonschiller:permissioncheck:1.3.0"
     }
 }
 ```

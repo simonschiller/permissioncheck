@@ -2,6 +2,7 @@ package io.github.simonschiller.permissioncheck.internal
 
 import io.github.simonschiller.permissioncheck.internal.data.Permission
 import io.github.simonschiller.permissioncheck.internal.data.Sdk23Permission
+import org.gradle.kotlin.dsl.support.normaliseLineSeparators
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -40,8 +41,7 @@ class BaselineHandlerTest {
             </baseline>
             
         """.trimIndent()
-
-        assertEquals(expectedBaselineContent, baselineFile.readText().replace("\r", ""))
+        assertEquals(expectedBaselineContent, baselineFile.readText().normaliseLineSeparators())
     }
 
     @Test
@@ -80,7 +80,7 @@ class BaselineHandlerTest {
             </baseline>
             
         """.trimIndent()
-        assertEquals(expectedBaselineContent, baselineFile.readText().replace("\r", ""))
+        assertEquals(expectedBaselineContent, baselineFile.readText().normaliseLineSeparators())
     }
 
     @Test
@@ -114,7 +114,7 @@ class BaselineHandlerTest {
             </baseline>
             
         """.trimIndent()
-        assertEquals(expectedBaselineContent, baselineFile.readText().replace("\r", ""))
+        assertEquals(expectedBaselineContent, baselineFile.readText().normaliseLineSeparators())
     }
 
     @Test
@@ -144,7 +144,7 @@ class BaselineHandlerTest {
             </baseline>
             
         """.trimIndent()
-        assertEquals(expectedBaselineContent, baselineFile.readText().replace("\r", ""))
+        assertEquals(expectedBaselineContent, baselineFile.readText().normaliseLineSeparators())
     }
 
     @Test

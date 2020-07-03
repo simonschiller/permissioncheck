@@ -22,5 +22,6 @@ dependencies {
 
 permissionCheck {
 	baselineFile.set(layout.projectDirectory.file("sample-baseline.xml"))
+	reportDirectory.set(layout.buildDirectory.dir("reports"))
 	strict.set(true)
 }

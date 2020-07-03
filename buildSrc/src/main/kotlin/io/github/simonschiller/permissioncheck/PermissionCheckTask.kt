@@ -3,6 +3,9 @@ package io.github.simonschiller.permissioncheck
 import io.github.simonschiller.permissioncheck.internal.BaselineHandler
 import io.github.simonschiller.permissioncheck.internal.ManifestParser
 import io.github.simonschiller.permissioncheck.internal.PermissionChecker
+import io.github.simonschiller.permissioncheck.internal.report.HtmlReporter
+import io.github.simonschiller.permissioncheck.internal.report.LogReporter
+import io.github.simonschiller.permissioncheck.internal.report.XmlReporter
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFile
@@ -12,7 +15,6 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
 import org.gradle.kotlin.dsl.property
-import javax.inject.Inject
 
 @CacheableTask
 @Suppress("UnstableApiUsage")
@@ -38,6 +40,12 @@ open class PermissionCheckTask : DefaultTask() {
             project.provider { null }
         }
     }
+
+    @OutputFile
+    val xmlReport: RegularFileProperty = project.objects.fileProperty()
+
+    @OutputFile
+    val htmlReport: RegularFileProperty = project.objects.fileProperty()
 
     @Input
     @Option(option = "recreate", description = "Recreates the permissions baseline if specified")
@@ -78,13 +86,17 @@ open class PermissionCheckTask : DefaultTask() {
         // Make sure the current permissions match the ones from the baseline
         val permissionChecker = PermissionChecker()
         val violations = permissionChecker.findViolations(variantPermissions, manifestPermissions, strict.get())
-        if (violations.isEmpty()) {
-            project.logger.lifecycle("Found no violations, all permissions match the baseline")
-        } else {
-            project.logger.error("Found ${violations.size} violation(s) while checking permissions:")
-            violations.forEach { violation ->
-                project.logger.error(violation.message)
-            }
+
+        // Generate reports based on the violations
+        val reporters = listOf(
+            LogReporter(project.logger),
+            XmlReporter(xmlReport.get().asFile),
+            HtmlReporter(htmlReport.get().asFile, variantName.get())
+        )
+        reporters.forEach { reporter -> reporter.report(violations) }
+
+        // Fail the task if violations have been found
+        if (violations.isNotEmpty()) {
             throw GradleException("Found ${violations.size} violation(s) while checking permissions")
         }
     }

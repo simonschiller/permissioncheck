@@ -3,13 +3,11 @@ package io.github.simonschiller.permissioncheck.internal
 import io.github.simonschiller.permissioncheck.internal.data.BasePermission
 import io.github.simonschiller.permissioncheck.internal.data.Permission
 import io.github.simonschiller.permissioncheck.internal.data.Sdk23Permission
+import io.github.simonschiller.permissioncheck.internal.util.appendElement
 import io.github.simonschiller.permissioncheck.internal.util.createDocumentBuilder
-import io.github.simonschiller.permissioncheck.internal.util.createTransformer
 import io.github.simonschiller.permissioncheck.internal.util.forEach
+import io.github.simonschiller.permissioncheck.internal.util.writeToFile
 import java.io.File
-import java.io.FileOutputStream
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
 
 internal class BaselineHandler(private val baselineFile: File) {
 
@@ -26,23 +24,21 @@ internal class BaselineHandler(private val baselineFile: File) {
 
         // Package changes into a XML document
         val document = createDocumentBuilder().newDocument()
-        val rootElement = document.createElement("baseline")
-        baseline.forEach { (variantName, permissions) ->
-            val variantElement = document.createElement("variant")
-            variantElement.setAttribute("name", variantName)
-            permissions.forEach { permission ->
-                variantElement.appendChild(permission.toBaselineElement(document))
+        document.appendElement("baseline") {
+            baseline.forEach { (variantName, permissions) ->
+
+                // Create permission entries for a single variant
+                appendElement("variant") {
+                    setAttribute("name", variantName)
+                    permissions.forEach { permission ->
+                        appendChild(permission.toXmlElement(document))
+                    }
+                }
             }
-            rootElement.appendChild(variantElement)
         }
-        document.appendChild(rootElement)
 
         // Write updated baseline to disk
-        baselineFile.parentFile.mkdirs()
-        val transformer = createTransformer()
-        FileOutputStream(baselineFile).use { outputStream ->
-            transformer.transform(DOMSource(document), StreamResult(outputStream))
-        }
+        document.writeToFile(baselineFile)
     }
 
     fun deserialize(): Map<String, Set<BasePermission>> {
