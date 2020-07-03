@@ -28,6 +28,9 @@ For greater customization, you can change the default behaviour of the tasks usi
 permissionCheck {
     // Location of the baseline file, defaults to "$projectDir/permission-baseline.xml"
     baselineFile.set(layout.projectDirectory.file("baselines/permissions.xml"))
+
+    // Directory for all generated reports, defaults to "$project.buildDir/reports/permissioncheck"
+    reportDirectory.set(layout.buildDirectory.dir("reports"))
     
     // Always perform strict checking, defaults to false
     strict.set(true)

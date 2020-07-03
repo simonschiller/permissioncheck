@@ -1,7 +1,6 @@
 package io.github.simonschiller.permissioncheck.internal.data
 
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class PermissionsTest {
@@ -64,5 +63,18 @@ class PermissionsTest {
             Permission("android.permission.INTERNET")
         )
         assertEquals(sorted, unsorted.sorted())
+    }
+
+    @Test
+    fun `Copying permissions works`() {
+        val original = Permission("android.permission.CAMERA", 26)
+        val exactCopy = original.copy()
+
+        assertEquals(original, exactCopy)
+        assertNotSame(original, exactCopy)
+
+        val changedCopy = original.copy(maxSdkVersion = null)
+        assertEquals("android.permission.CAMERA", changedCopy.name)
+        assertNull(changedCopy.maxSdkVersion)
     }
 }

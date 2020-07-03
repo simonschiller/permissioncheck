@@ -40,6 +40,10 @@ class PermissionCheckPlugin : Plugin<Project> {
             variantName.set(variant.name)
             mergedManifest.set(getMergedManifestFile(variant)) // Takes care of task dependencies automatically
             baseline.set(extension.baselineFile)
+
+            xmlReport.set(extension.reportDirectory.file("permission-check-report-${variant.name}.xml"))
+            htmlReport.set(extension.reportDirectory.file("permission-check-report-${variant.name}.html"))
+
             recreate.set(false)
             strict.set(extension.strict)
         }

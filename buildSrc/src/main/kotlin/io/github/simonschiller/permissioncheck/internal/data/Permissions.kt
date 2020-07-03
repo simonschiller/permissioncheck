@@ -7,12 +7,14 @@ import java.util.*
 internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?) : Comparable<BasePermission> {
     abstract val tag: String
 
-    fun toBaselineElement(document: Document): Element = document.createElement(tag).apply {
+    fun toXmlElement(document: Document): Element = document.createElement(tag).apply {
         setAttribute("name", name)
         if (maxSdkVersion != null) {
             setAttribute("maxSdkVersion", maxSdkVersion.toString())
         }
     }
+
+    abstract fun copy(name: String = this.name, maxSdkVersion: Int? = this.maxSdkVersion): BasePermission
 
     override fun toString(): String {
         val builder = StringBuilder("""<$tag android:name="$name" """)
@@ -43,8 +45,10 @@ internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?
 
 internal class Permission(name: String, maxSdkVersion: Int? = null) : BasePermission(name, maxSdkVersion) {
     override val tag: String = "uses-permission"
+    override fun copy(name: String, maxSdkVersion: Int?) = Permission(name, maxSdkVersion)
 }
 
 internal class Sdk23Permission(name: String, maxSdkVersion: Int? = null) : BasePermission(name, maxSdkVersion) {
     override val tag: String = "uses-permission-sdk-23"
+    override fun copy(name: String, maxSdkVersion: Int?) = Sdk23Permission(name, maxSdkVersion)
 }
