@@ -8,7 +8,7 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 import java.io.File
 
-internal class HtmlReporter(private val reportFile: File, private val variantName: String) : Reporter {
+internal class HtmlReporter(private val reportFile: File) : Reporter {
 
     // Only HTML report files are allowed
     init {
@@ -17,7 +17,7 @@ internal class HtmlReporter(private val reportFile: File, private val variantNam
         }
     }
 
-    override fun report(violations: List<Violation>) {
+    override fun report(violations: Map<String, List<Violation>>) {
         val css = javaClass.getResourceAsStream("/bootstrap.min.css").use { inputStream ->
             inputStream.bufferedReader().readText()
         }
@@ -40,7 +40,9 @@ internal class HtmlReporter(private val reportFile: File, private val variantNam
                 appendElement("div") {
                     setAttribute("class", "container")
                     appendTextElement("h1", "PermissionCheck Report", "mt-4 mb-4")
-                    appendCard(violations)
+                    violations.forEach { (variantName, variantViolations) ->
+                        appendCard(variantName, variantViolations)
+                    }
                 }
             }
         }
@@ -49,7 +51,7 @@ internal class HtmlReporter(private val reportFile: File, private val variantNam
         document.writeToFile(reportFile, omitXmlDeclaration = true)
     }
 
-    private fun Element.appendCard(violations: List<Violation>) = appendElement("div") {
+    private fun Element.appendCard(variantName: String, violations: List<Violation>) = appendElement("div") {
         setAttribute("class", "card mt-4 mb-4 bg-dark")
 
         // Card header

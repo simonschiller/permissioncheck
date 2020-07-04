@@ -27,7 +27,7 @@ class BaselineHandlerTest {
         )
 
         val baselineHandler = BaselineHandler(baselineFile)
-        baselineHandler.serialize("debug", permissions)
+        baselineHandler.serialize(mapOf("debug" to permissions))
 
         val expectedBaselineContent = """
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -64,7 +64,7 @@ class BaselineHandlerTest {
         )
 
         val baselineHandler = BaselineHandler(baselineFile)
-        baselineHandler.serialize("debug", permissions)
+        baselineHandler.serialize(mapOf("debug" to permissions))
 
         val expectedBaselineContent = """
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -102,7 +102,7 @@ class BaselineHandlerTest {
         )
 
         val baselineHandler = BaselineHandler(baselineFile)
-        baselineHandler.serialize("debug", permissions)
+        baselineHandler.serialize(mapOf("debug" to permissions))
 
         val expectedBaselineContent = """
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -132,7 +132,7 @@ class BaselineHandlerTest {
         )
 
         val baselineHandler = BaselineHandler(baselineFile)
-        baselineHandler.serialize("debug", permissions)
+        baselineHandler.serialize(mapOf("debug" to permissions))
 
         val expectedBaselineContent = """
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -140,6 +140,40 @@ class BaselineHandlerTest {
                 <variant name="debug">
                     <uses-permission name="android.permission.ACCESS_COARSE_LOCATION"/>
                     <uses-permission-sdk-23 name="android.permission.INTERNET"/>
+                </variant>
+            </baseline>
+            
+        """.trimIndent()
+        assertEquals(expectedBaselineContent, baselineFile.readText().normaliseLineSeparators())
+    }
+
+    @Test
+    fun `Baseline file with multiple variants is created correctly`() {
+        val baselineFile = tempDir.resolve("permission-baseline.xml")
+
+        val debugPermissions = setOf(
+            Permission("android.permission.ACCESS_COARSE_LOCATION"),
+            Sdk23Permission("android.permission.INTERNET")
+        )
+
+        val releasePermissions = setOf(
+            Permission("android.permission.ACCESS_FINE_LOCATION", 27),
+            Sdk23Permission("android.permission.WRITE_EXTERNAL_STORAGE", 26)
+        )
+
+        val baselineHandler = BaselineHandler(baselineFile)
+        baselineHandler.serialize(mapOf("debug" to debugPermissions, "release" to releasePermissions))
+
+        val expectedBaselineContent = """
+            <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+            <baseline>
+                <variant name="debug">
+                    <uses-permission name="android.permission.ACCESS_COARSE_LOCATION"/>
+                    <uses-permission-sdk-23 name="android.permission.INTERNET"/>
+                </variant>
+                <variant name="release">
+                    <uses-permission maxSdkVersion="27" name="android.permission.ACCESS_FINE_LOCATION"/>
+                    <uses-permission-sdk-23 maxSdkVersion="26" name="android.permission.WRITE_EXTERNAL_STORAGE"/>
                 </variant>
             </baseline>
             

@@ -15,11 +15,16 @@ internal class XmlReporter(private val reportFile: File) : Reporter {
         }
     }
 
-    override fun report(violations: List<Violation>) {
+    override fun report(violations: Map<String, List<Violation>>) {
         val document = createDocumentBuilder().newDocument()
         document.appendElement("violations") {
-            violations.forEach { violation ->
-                appendChild(violation.toXmlElement(document))
+            violations.forEach { (variantName, variantViolations) ->
+                appendElement("variant") {
+                    setAttribute("name", variantName)
+                    variantViolations.forEach { violation ->
+                        appendChild(violation.toXmlElement(document))
+                    }
+                }
             }
         }
 

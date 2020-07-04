@@ -2,14 +2,12 @@ package io.github.simonschiller.permissioncheck
 
 import io.github.simonschiller.permissioncheck.testutil.AndroidProjectExtension
 import org.gradle.kotlin.dsl.support.normaliseLineSeparators
-import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
-import java.io.File
 
-class PermissionCheckTaskIntegrationTest {
+class MultiVariantPermissionCheckIntegrationTest {
 
     @JvmField
     @RegisterExtension
@@ -17,8 +15,8 @@ class PermissionCheckTaskIntegrationTest {
 
     @Test
     fun `Baseline file is created if it does not exist yet`() {
-        val buildResult = androidProject.runTask("checkDebugPermissions", expectFailure = true)
-        assertTrue(buildResult.output.contains("Created baseline for variant debug"))
+        val buildResult = androidProject.runTask("checkPermissions", expectFailure = true)
+        assertTrue(buildResult.output.contains("Created baseline"))
         assertTrue(buildResult.output.contains("Aborting build since new baseline was created"))
 
         val baseline = """
@@ -29,8 +27,13 @@ class PermissionCheckTaskIntegrationTest {
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                 </variant>
+                <variant name="release">
+                    <uses-permission name="android.permission.INTERNET"/>
+                    <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
+                    <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                </variant>
             </baseline>
-            
+
         """.trimIndent()
         assertEquals(baseline, androidProject.baselineFile.readText().normaliseLineSeparators())
     }
@@ -48,8 +51,8 @@ class PermissionCheckTaskIntegrationTest {
             </baseline>
         """.trimIndent())
 
-        val buildResult = androidProject.runTask("checkDebugPermissions", expectFailure = true)
-        assertTrue(buildResult.output.contains("Created baseline for variant debug"))
+        val buildResult = androidProject.runTask("checkPermissions", expectFailure = true)
+        assertTrue(buildResult.output.contains("Created baseline"))
         assertTrue(buildResult.output.contains("Aborting build since new baseline was created"))
 
         val baseline = """
@@ -73,13 +76,18 @@ class PermissionCheckTaskIntegrationTest {
 
     @Test
     fun `Task completes without failure when recreating baselines`() {
-        val buildResult = androidProject.runTask("checkDebugPermissions", "--recreate")
-        assertTrue(buildResult.output.contains("Created baseline for variant debug"))
+        val buildResult = androidProject.runTask("checkPermissions", "--recreate")
+        assertTrue(buildResult.output.contains("Created baseline"))
 
         val baseline = """
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <baseline>
                 <variant name="debug">
+                    <uses-permission name="android.permission.INTERNET"/>
+                    <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
+                    <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                </variant>
+                <variant name="release">
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -93,21 +101,21 @@ class PermissionCheckTaskIntegrationTest {
     @Test
     fun `Task succeeds silently if there are no violations`() {
         androidProject.setupBaseline()
-        val buildResult = androidProject.runTask("checkDebugPermissions")
+        val buildResult = androidProject.runTask("checkPermissions")
         assertTrue(buildResult.output.contains("Found no violations"))
     }
 
     @Test
     fun `Task fails if there are violations`() {
         androidProject.setupBaselineWithViolations()
-        val buildResult = androidProject.runTask("checkDebugPermissions", expectFailure = true)
+        val buildResult = androidProject.runTask("checkPermissions", expectFailure = true)
         assertTrue(buildResult.output.contains("Found 2 violation(s)"))
     }
 
     @Test
     fun `Task fails if there are strict mode violations and strict mode is enabled via command line`() {
         androidProject.setupBaselineWithViolations()
-        val buildResult = androidProject.runTask("checkDebugPermissions", "--strict", expectFailure = true)
+        val buildResult = androidProject.runTask("checkPermissions", "--strict", expectFailure = true)
         assertTrue(buildResult.output.contains("Found 3 violation(s)"))
     }
 
@@ -121,7 +129,7 @@ class PermissionCheckTaskIntegrationTest {
         """.trimIndent())
 
         androidProject.setupBaselineWithViolations()
-        val buildResult = androidProject.runTask("checkDebugPermissions", expectFailure = true)
+        val buildResult = androidProject.runTask("checkPermissions", expectFailure = true)
         assertTrue(buildResult.output.contains("Found 3 violation(s)"))
     }
 
@@ -130,8 +138,11 @@ class PermissionCheckTaskIntegrationTest {
         androidProject.setupBaseline()
 
         val buildResult = androidProject.runTask("check")
-        assertTrue(buildResult.tasks.any { it.path == ":checkDebugPermissions" })
-        assertTrue(buildResult.tasks.any { it.path == ":checkReleasePermissions" })
+        assertTrue(buildResult.tasks.any { it.path == ":checkPermissions" })
+
+        // Individual tasks should not be executed
+        assertTrue(buildResult.tasks.none { it.path == ":checkDebugPermissions" })
+        assertTrue(buildResult.tasks.none { it.path == ":checkReleasePermissions" })
     }
 
     @Test
@@ -143,7 +154,7 @@ class PermissionCheckTaskIntegrationTest {
             }
         """.trimIndent())
 
-        val buildResult = androidProject.runTask("checkDebugPermissions", expectFailure = true)
+        val buildResult = androidProject.runTask("checkPermissions", expectFailure = true)
 
         val baselineFile = androidProject.rootDir.resolve("baselines").resolve("test-baseline.xml")
         assertTrue(buildResult.output.contains(baselineFile.path))
@@ -154,11 +165,11 @@ class PermissionCheckTaskIntegrationTest {
     @Test
     fun `Reports are generated when task is executed`() {
         androidProject.setupBaseline()
-        androidProject.runTask("checkDebugPermissions")
+        androidProject.runTask("checkPermissions")
 
         val reportDirectory = androidProject.rootDir.resolve("build").resolve("reports").resolve("permissioncheck")
-        assertTrue(reportDirectory.resolve("permission-check-report-debug.xml").exists())
-        assertTrue(reportDirectory.resolve("permission-check-report-debug.html").exists())
+        assertTrue(reportDirectory.resolve("permission-check-report.xml").exists())
+        assertTrue(reportDirectory.resolve("permission-check-report.html").exists())
     }
 
     @Test
@@ -171,15 +182,15 @@ class PermissionCheckTaskIntegrationTest {
         """.trimIndent())
 
         androidProject.setupBaseline()
-        androidProject.runTask("checkDebugPermissions")
+        androidProject.runTask("checkPermissions")
 
         val reportDirectory = androidProject.rootDir.resolve("build").resolve("reports")
-        assertTrue(reportDirectory.resolve("permission-check-report-debug.xml").exists())
-        assertTrue(reportDirectory.resolve("permission-check-report-debug.html").exists())
+        assertTrue(reportDirectory.resolve("permission-check-report.xml").exists())
+        assertTrue(reportDirectory.resolve("permission-check-report.html").exists())
 
         val oldReportDirectory = androidProject.rootDir.resolve("build").resolve("reports").resolve("permissioncheck")
-        assertFalse(oldReportDirectory.resolve("permission-check-report-debug.xml").exists())
-        assertFalse(oldReportDirectory.resolve("permission-check-report-debug.html").exists())
+        assertFalse(oldReportDirectory.resolve("permission-check-report.xml").exists())
+        assertFalse(oldReportDirectory.resolve("permission-check-report.html").exists())
     }
 
     @Test
@@ -191,7 +202,7 @@ class PermissionCheckTaskIntegrationTest {
             }
         """.trimIndent())
 
-        val buildResult = androidProject.runTask("checkDebugPermissions", expectFailure = true)
+        val buildResult = androidProject.runTask("checkPermissions", expectFailure = true)
         assertTrue(buildResult.output.contains("The permission baseline has to be a .xml file"))
     }
 
@@ -199,38 +210,38 @@ class PermissionCheckTaskIntegrationTest {
     fun `Up-to-date checks work correctly when manifest changes`() {
         androidProject.setupBaseline()
 
-        var buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        var buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
 
-        buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
 
         val manifestFile = androidProject.rootDir.resolve("src").resolve("main").resolve("AndroidManifest.xml")
         manifestFile.writeText(manifestFile.readText().replace("simonschiller", "johndoe")) // Trigger change
 
-        buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
 
-        buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
     }
 
     @Test
     fun `Up-to-date checks work correctly when baseline changes`() {
         androidProject.setupBaseline()
 
-        var buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        var buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
 
-        buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
 
         androidProject.baselineFile.appendText(" ") // Trigger change
 
-        buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.SUCCESS, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
 
-        buildResult = androidProject.runTask("checkDebugPermissions")
-        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkDebugPermissions" }.outcome)
+        buildResult = androidProject.runTask("checkPermissions")
+        assertEquals(TaskOutcome.UP_TO_DATE, buildResult.tasks.single { it.path == ":checkPermissions" }.outcome)
     }
 }

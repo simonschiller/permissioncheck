@@ -4,6 +4,7 @@ import com.android.build.VariantOutput
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
@@ -13,9 +14,10 @@ import java.util.*
 
 @Suppress("UnstableApiUsage")
 class PermissionCheckPlugin : Plugin<Project> {
+    private lateinit var extension: PermissionCheckExtension
 
     override fun apply(project: Project) {
-        val extension = project.extensions.create("permissionCheck", PermissionCheckExtension::class.java)
+        extension = project.extensions.create("permissionCheck", PermissionCheckExtension::class.java)
 
         // Register tasks once the Android app plugin is available
         project.plugins.configureEach {
@@ -23,22 +25,50 @@ class PermissionCheckPlugin : Plugin<Project> {
                 return@configureEach // Only applicable to app modules
             }
 
+            // Register composite task
             val appExtension = project.extensions.getByType(AppExtension::class.java)
+            registerCompositeTask(project, appExtension.applicationVariants)
+
+            // Register task for each variant
             appExtension.applicationVariants.configureEach {
-                registerTask(project, this, extension)
+                registerVariantTask(project, this)
             }
         }
     }
 
-    private fun registerTask(project: Project, variant: ApplicationVariant, extension: PermissionCheckExtension) {
+    private fun registerCompositeTask(project: Project, applicationVariants: DomainObjectSet<ApplicationVariant>) {
+        val task = project.tasks.register("checkPermissions", PermissionCheckTask::class.java) {
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+            description = "Checks permissions of all variants for regressions"
+
+            applicationVariants.configureEach {
+                variants.add(name)
+                mergedManifests.add(getMergedManifestFile(this)) // Takes care of task dependencies automatically
+            }
+            baseline.set(extension.baselineFile)
+
+            xmlReport.set(extension.reportDirectory.file("permission-check-report.xml"))
+            htmlReport.set(extension.reportDirectory.file("permission-check-report.html"))
+
+            recreate.set(false)
+            strict.set(extension.strict)
+        }
+
+        // Execute this task as part of the standard Gradle check task
+        project.tasks.named("check").configure {
+            dependsOn(task)
+        }
+    }
+
+    private fun registerVariantTask(project: Project, variant: ApplicationVariant) {
         val taskName = "check${variant.name.capitalize(Locale.ROOT)}Permissions"
 
-        val task = project.tasks.register(taskName, PermissionCheckTask::class.java) {
+        project.tasks.register(taskName, PermissionCheckTask::class.java) {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
-            description = "Checks ${variant.name} permissions for regressions"
+            description = "Checks permissions of the ${variant.name} variant for regressions"
 
-            variantName.set(variant.name)
-            mergedManifest.set(getMergedManifestFile(variant)) // Takes care of task dependencies automatically
+            variants.add(variant.name)
+            mergedManifests.add(getMergedManifestFile(variant))
             baseline.set(extension.baselineFile)
 
             xmlReport.set(extension.reportDirectory.file("permission-check-report-${variant.name}.xml"))
@@ -46,11 +76,6 @@ class PermissionCheckPlugin : Plugin<Project> {
 
             recreate.set(false)
             strict.set(extension.strict)
-        }
-
-        // Execute the task as part of the standard Gradle check task
-        project.tasks.named("check").configure {
-            dependsOn(task)
         }
     }
 

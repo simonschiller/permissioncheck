@@ -5,13 +5,18 @@ import org.gradle.api.logging.Logger
 
 internal class LogReporter(private val logger: Logger) : Reporter {
 
-    override fun report(violations: List<Violation>) {
-        if (violations.isEmpty()) {
+    override fun report(violations: Map<String, List<Violation>>) {
+        val faultyVariants = violations.filterValues { it.isNotEmpty() }
+
+        if (faultyVariants.isEmpty()) {
             logger.lifecycle("Found no violations, all permissions match the baseline")
         } else {
-            logger.error("Found ${violations.size} violation(s) while checking permissions")
-            violations.forEach { violation ->
-                logger.error(violation.message)
+            faultyVariants.forEach { (variantName, variantViolations) ->
+                logger.error("Found ${variantViolations.size} violation(s) for variant $variantName")
+                variantViolations.forEach { violation ->
+                    logger.error(violation.message)
+                }
+                logger.lifecycle("") // Separate different variants by blank lines
             }
         }
     }

@@ -10,10 +10,12 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.options.Option
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 
 @CacheableTask
@@ -21,11 +23,11 @@ import org.gradle.kotlin.dsl.property
 open class PermissionCheckTask : DefaultTask() {
 
     @Input
-    val variantName: Property<String> = project.objects.property()
+    val variants: ListProperty<String> = project.objects.listProperty()
 
-    @InputFile
+    @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    val mergedManifest: RegularFileProperty = project.objects.fileProperty()
+    val mergedManifests: ListProperty<RegularFile> = project.objects.listProperty()
 
     @Internal // Exposed via the optionalBaseline property, so the task can run if the baseline does not exist yet
     val baseline: RegularFileProperty = project.objects.fileProperty()
@@ -58,16 +60,18 @@ open class PermissionCheckTask : DefaultTask() {
     @TaskAction
     fun checkAppPermissions() {
         val manifestParser = ManifestParser()
-        val manifestPermissions = manifestParser.parsePermissions(mergedManifest.get().asFile)
+        val manifestPermissions = mergedManifests.get().map { manifest ->
+            manifestParser.parsePermissions(manifest.asFile)
+        }
+        val permissions = variants.get().zip(manifestPermissions).toMap()
 
-        val variant = variantName.get()
         val baselineFile = baseline.get().asFile
         val baselineHandler = BaselineHandler(baselineFile)
 
         // Create (or recreate) the baseline if needed
         if (recreate.get() || !baselineFile.exists()) {
-            baselineHandler.serialize(variant, manifestPermissions)
-            project.logger.lifecycle("Created baseline for variant $variant at $baselineFile")
+            baselineHandler.serialize(permissions)
+            project.logger.lifecycle("Created baseline at $baselineFile")
             if (!recreate.get()) { // New baseline created without explicit flag -> fail the build
                 abortBuild()
             }
@@ -76,28 +80,30 @@ open class PermissionCheckTask : DefaultTask() {
 
         // Parse the existing baseline
         val baselinePermissions = baselineHandler.deserialize()
-        val variantPermissions = baselinePermissions[variant]
-        if (variantPermissions == null) {
-            baselineHandler.serialize(variant, manifestPermissions) // Create new baseline for variant
-            project.logger.lifecycle("Created baseline for variant $variant at $baselineFile")
+        if (!permissions.all { baselinePermissions.containsKey(it.key) }) {
+            baselineHandler.serialize(permissions) // Update baseline, because one or more variants are missing
+            project.logger.lifecycle("Created baseline at $baselineFile")
             abortBuild()
         }
 
         // Make sure the current permissions match the ones from the baseline
         val permissionChecker = PermissionChecker()
-        val violations = permissionChecker.findViolations(variantPermissions, manifestPermissions, strict.get())
+        val violations = permissions.mapValues { (variantName, variantPermissions) ->
+            permissionChecker.findViolations(baselinePermissions.getValue(variantName), variantPermissions, strict.get())
+        }
 
         // Generate reports based on the violations
         val reporters = listOf(
             LogReporter(project.logger),
             XmlReporter(xmlReport.get().asFile),
-            HtmlReporter(htmlReport.get().asFile, variantName.get())
+            HtmlReporter(htmlReport.get().asFile)
         )
         reporters.forEach { reporter -> reporter.report(violations) }
 
-        // Fail the task if violations have been found
-        if (violations.isNotEmpty()) {
-            throw GradleException("Found ${violations.size} violation(s) while checking permissions")
+        // Fail the task if any violations have been found
+        val violationCount = violations.values.fold(0) { sum, variantViolations -> sum + variantViolations.size }
+        if (violationCount != 0) {
+            throw GradleException("Found $violationCount violation(s) while checking permissions")
         }
     }
 

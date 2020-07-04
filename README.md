@@ -8,13 +8,13 @@ In large scale Android applications, it can be hard to continuously monitor app 
 
 ## Usage
 
-After the PermissionCheck plugin is applied, you can use the `check<Variant>Permissions` tasks to generate the initial baseline file. Make sure you run this task for all variants that you're publishing, if your app contains multiple flavors. The task will fail on the initial run, to avoid creating baselines on accident. You should include the generated baseline file your VCS.
+After the PermissionCheck plugin is applied, you can use the `checkPermissions` task to generate the initial baseline file. The task will fail on the initial run, to avoid creating baselines on accident. You should include the generated baseline file your VCS.
 
-Once the baseline exists, each subsequent invocation of `check<Variant>Permissions` will compare the current app permissions against the created baseline. The task will fail if changes are detected, allowing you to automatically catch regressions by running this task as part of your CI pipeline. These tasks will also run as part of the standard Gradle `check` task. 
+Once the baseline exists, each subsequent invocation of `checkPermissions` will compare the current app permissions against the created baseline. The task will fail if changes are detected, allowing you to automatically catch regressions by running this task as part of your CI pipeline. These tasks will also run as part of the standard Gradle `check` task. In case you only want to verify a single variant, you can use the `check<Variant>Permissions` tasks.
 
 #### Recreating the baseline
 
-When you deliberately want to add new permissions to the app, you need to recreate the baseline so it matches the updated permissions. You can either add the new entry to the baseline manually or just recreate it using `check<Variant>Permissions --recreate`.
+When you deliberately want to add new permissions to the app, you need to recreate the baseline so it matches the updated permissions. You can either add the new entry to the baseline manually or just recreate it using `checkPermissions --recreate`.
 
 #### Strict mode
 
@@ -43,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.3.0"
+    id "io.github.simonschiller.permissioncheck" version "1.4.0"
 }
 ```
 
@@ -57,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.3.0"
+        classpath "io.github.simonschiller:permissioncheck:1.4.0"
     }
 }
 ```
@@ -76,7 +76,8 @@ The source code of the plugin is located in the `buildSrc` folder. The `sample` 
 
 * Build the plugin: `./gradlew -b buildSrc/build.gradle.kts assemble`
 * Run tests: `./gradlew -b buildSrc/build.gradle.kts test`
-* Run the tasks in the sample project: `./gradlew checkReleasePermissions`
+* Run the task in the sample project (single variant): `./gradlew checkReleasePermissions`
+* Run the task in the sample project (all variants): `./gradlew checkPermissions`
 
 The first test execution can take a while, since [Gradle TestKit](https://docs.gradle.org/current/userguide/test_kit.html) needs to re-download all dependencies, subsequent runs should be faster. Tests are executed during project sync, so the initial sync of this projects in Android Studio or IntelliJ can also be slow.
 
