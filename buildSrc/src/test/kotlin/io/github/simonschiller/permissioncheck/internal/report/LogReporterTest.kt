@@ -16,7 +16,7 @@ class LogReporterTest {
         val reporter = LogReporter(logger)
 
         val violations = emptyList<Violation>()
-        reporter.report(violations)
+        reporter.report(mapOf("debug" to violations, "release" to violations))
 
         val expectedOutput = listOf(
             "Found no violations, all permissions match the baseline"
@@ -35,13 +35,39 @@ class LogReporterTest {
             Violation.MaxSdkIncreased(Permission("android.permission.ACCESS_FINE_LOCATION"), 27),
             Violation.MaxSdkDecreased(Sdk23Permission("android.permission.INTERNET", 25), 28)
         )
-        reporter.report(violations)
+        reporter.report(mapOf("debug" to violations, "release" to emptyList()))
 
         val expectedOutput = listOf(
-            "Found 4 violation(s) while checking permissions",
+            "Found 4 violation(s) for variant debug",
             """New permission '<uses-permission android:name="android.permission.CAMERA" />' was added""",
             """Permission '<uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />' was removed""",
             """Max SDK of permission '<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' was increased (from 27)""",
+            """Max SDK of permission '<uses-permission-sdk-23 android:name="android.permission.INTERNET" android:maxSdkVersion="25" />' was decreased (from 28)"""
+        )
+        assertEquals(expectedOutput, logger.error)
+    }
+
+    @Test
+    fun `Violations for multiple variants are logged separately`() {
+        val logger = TestLogger()
+        val reporter = LogReporter(logger)
+
+        val debugViolations = listOf(
+            Violation.Added(Permission("android.permission.CAMERA")),
+            Violation.MaxSdkIncreased(Permission("android.permission.ACCESS_FINE_LOCATION"), 27)
+        )
+        val releaseViolations = listOf(
+            Violation.Removed(Sdk23Permission("android.permission.ACCESS_COARSE_LOCATION")),
+            Violation.MaxSdkDecreased(Sdk23Permission("android.permission.INTERNET", 25), 28)
+        )
+        reporter.report(mapOf("debug" to debugViolations, "release" to releaseViolations))
+
+        val expectedOutput = listOf(
+            "Found 2 violation(s) for variant debug",
+            """New permission '<uses-permission android:name="android.permission.CAMERA" />' was added""",
+            """Max SDK of permission '<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' was increased (from 27)""",
+            "Found 2 violation(s) for variant release",
+            """Permission '<uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />' was removed""",
             """Max SDK of permission '<uses-permission-sdk-23 android:name="android.permission.INTERNET" android:maxSdkVersion="25" />' was decreased (from 28)"""
         )
         assertEquals(expectedOutput, logger.error)

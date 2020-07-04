@@ -18,19 +18,21 @@ internal class BaselineHandler(private val baselineFile: File) {
         }
     }
 
-    fun serialize(variantName: String, permissions: Set<BasePermission>) {
+    fun serialize(permissions: Map<String, Set<BasePermission>>) {
         val baseline = deserialize().toMutableMap() // Parse existing baseline and add new or updated permissions
-        baseline[variantName] = permissions
+        permissions.forEach { (variantName, variantPermissions) ->
+            baseline[variantName] = variantPermissions
+        }
 
         // Package changes into a XML document
         val document = createDocumentBuilder().newDocument()
         document.appendElement("baseline") {
-            baseline.forEach { (variantName, permissions) ->
+            baseline.forEach { (variantName, variantPermissions) ->
 
                 // Create permission entries for a single variant
                 appendElement("variant") {
                     setAttribute("name", variantName)
-                    permissions.forEach { permission ->
+                    variantPermissions.forEach { permission ->
                         appendChild(permission.toXmlElement(document))
                     }
                 }
