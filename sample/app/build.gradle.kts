@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-	compileSdkVersion(29)
+	compileSdkVersion(30)
 
 	defaultConfig {
 		minSdkVersion(21)
-		targetSdkVersion(29)
+		targetSdkVersion(30)
 	}
 
 	lintOptions {
-		check("") // Disable all Lint checks
+		checkOnly("") // Disable all Lint checks
 	}
 }
 

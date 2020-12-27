@@ -2,10 +2,12 @@ buildscript {
 	repositories {
 		google()
 		mavenCentral()
+		mavenLocal()
 		jcenter()
 	}
 	dependencies {
-		classpath("com.android.tools.build:gradle:4.0.0")
+		classpath("com.android.tools.build:gradle:4.1.1")
+//		classpath("io.github.simonschiller:plugin:+") // Uncomment to use the sample
 	}
 }
 

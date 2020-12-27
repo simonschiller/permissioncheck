@@ -1,49 +1,51 @@
-package io.github.simonschiller.permissioncheck
+@file:Suppress("DEPRECATION") // Deprecated APIs are used for backwards compatibility
+
+package io.github.simonschiller.permissioncheck.internal.config
 
 import com.android.build.VariantOutput
 import com.android.build.gradle.AppExtension
-import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.api.ApplicationVariant
+import com.android.build.gradle.tasks.ManifestProcessorTask
+import io.github.simonschiller.permissioncheck.PermissionCheckExtension
+import io.github.simonschiller.permissioncheck.PermissionCheckTask
 import org.gradle.api.DomainObjectSet
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import java.util.*
 
+/** Configures the tasks for AGP versions 4.0.1 and below. */
 @Suppress("UnstableApiUsage")
-class PermissionCheckPlugin : Plugin<Project> {
-    private lateinit var extension: PermissionCheckExtension
+internal class TaskConfiguratorV1 : TaskConfigurator {
 
-    override fun apply(project: Project) {
-        extension = project.extensions.create("permissionCheck", PermissionCheckExtension::class.java)
+    override fun configureTasks(project: Project, extension: PermissionCheckExtension) {
 
-        // Register tasks once the Android app plugin is available
-        project.plugins.configureEach {
-            if (this !is AppPlugin) {
-                return@configureEach // Only applicable to app modules
-            }
+        // Register composite task
+        val appExtension = project.extensions.getByType(AppExtension::class.java)
+        registerCompositeTask(project, extension, appExtension.applicationVariants)
 
-            // Register composite task
-            val appExtension = project.extensions.getByType(AppExtension::class.java)
-            registerCompositeTask(project, appExtension.applicationVariants)
-
-            // Register task for each variant
-            appExtension.applicationVariants.configureEach {
-                registerVariantTask(project, this)
-            }
+        // Register task for each variant
+        appExtension.applicationVariants.configureEach {
+            registerVariantTask(project, extension, this)
         }
     }
 
-    private fun registerCompositeTask(project: Project, applicationVariants: DomainObjectSet<ApplicationVariant>) {
+    private fun registerCompositeTask(
+        project: Project,
+        extension: PermissionCheckExtension,
+        applicationVariants: DomainObjectSet<ApplicationVariant>
+    ) {
         val task = project.tasks.register("checkPermissions", PermissionCheckTask::class.java) {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = "Checks permissions of all variants for regressions"
 
             applicationVariants.configureEach {
                 variants.add(name)
-                mergedManifests.add(getMergedManifestFile(this)) // Takes care of task dependencies automatically
+                mergedManifests.add(getMergedManifestFile(project, this))
+
+                dependsOn(getManifestMergerTask(this))
             }
             baseline.set(extension.baselineFile)
 
@@ -60,7 +62,11 @@ class PermissionCheckPlugin : Plugin<Project> {
         }
     }
 
-    private fun registerVariantTask(project: Project, variant: ApplicationVariant) {
+    private fun registerVariantTask(
+        project: Project,
+        extension: PermissionCheckExtension,
+        variant: ApplicationVariant
+    ) {
         val taskName = "check${variant.name.capitalize(Locale.ROOT)}Permissions"
 
         project.tasks.register(taskName, PermissionCheckTask::class.java) {
@@ -68,7 +74,7 @@ class PermissionCheckPlugin : Plugin<Project> {
             description = "Checks permissions of the ${variant.name} variant for regressions"
 
             variants.add(variant.name)
-            mergedManifests.add(getMergedManifestFile(variant))
+            mergedManifests.add(getMergedManifestFile(project, variant))
             baseline.set(extension.baselineFile)
 
             xmlReport.set(extension.reportDirectory.file("permission-check-report-${variant.name}.xml"))
@@ -76,14 +82,19 @@ class PermissionCheckPlugin : Plugin<Project> {
 
             recreate.set(false)
             strict.set(extension.strict)
+
+            dependsOn(getManifestMergerTask(variant))
         }
     }
 
-    // Extracts the location of the merged manifest
-    private fun getMergedManifestFile(variant: ApplicationVariant): Provider<RegularFile> {
+    private fun getManifestMergerTask(variant: ApplicationVariant): TaskProvider<ManifestProcessorTask> {
         val output = variant.outputs.single { it.outputType == VariantOutput.MAIN }
-        return output.processManifestProvider.flatMap { task ->
-            task.manifestOutputDirectory.file("AndroidManifest.xml")
+        return output.processManifestProvider
+    }
+
+    private fun getMergedManifestFile(project: Project, variant: ApplicationVariant): Provider<RegularFile> {
+        return project.layout.buildDirectory.map { buildDir ->
+            buildDir.dir("intermediates").dir("merged_manifests").dir(variant.dirName).file("AndroidManifest.xml")
         }
     }
 }
