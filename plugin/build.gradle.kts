@@ -35,7 +35,7 @@ tasks.withType<Test>().configureEach {
     dependsOn("publishToMavenLocal")
 
     testLogging {
-        events("failed")
+        events("passed", "skipped", "failed")
         exceptionFormat = TestExceptionFormat.FULL
     }
 }
