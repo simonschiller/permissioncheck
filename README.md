@@ -43,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.4.0"
+    id "io.github.simonschiller.permissioncheck" version "1.5.0"
 }
 ```
 
@@ -57,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.4.0"
+        classpath "io.github.simonschiller:permissioncheck:1.5.0"
     }
 }
 ```
@@ -72,14 +72,17 @@ You can also find instructions on how to use the PermissionCheck plugin on the [
 
 ## Working with this project
 
-The source code of the plugin is located in the `buildSrc` folder. The `sample` folder contains a sample project that shows how the plugin is used.
+The source code of the plugin is located in the `plugin` folder. The `sample` folder contains a sample project that shows how the plugin is used.
 
-* Build the plugin: `./gradlew -b buildSrc/build.gradle.kts assemble`
-* Run tests: `./gradlew -b buildSrc/build.gradle.kts test`
-* Run the task in the sample project (single variant): `./gradlew checkReleasePermissions`
-* Run the task in the sample project (all variants): `./gradlew checkPermissions`
+* Build the plugin: `./gradlew :plugin:assemble`
+* Run tests: `./gradlew :plugin:test`
 
 The first test execution can take a while, since [Gradle TestKit](https://docs.gradle.org/current/userguide/test_kit.html) needs to re-download all dependencies, subsequent runs should be faster. Tests are executed during project sync, so the initial sync of this projects in Android Studio or IntelliJ can also be slow.
+
+To work with the sample project, you first have to publish the plugin to your local Maven repository. You can do so by running `./gradlew publishToMavenLocal`. Afterwards, uncomment the marked lines in the `settings.gradle` and the `build.gradle.kts` files to include the sample project.
+
+* Run the task in the sample project (single variant): `./gradlew checkReleasePermissions`
+* Run the task in the sample project (all variants): `./gradlew checkPermissions`
 
 ## License
 

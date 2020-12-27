@@ -1,13 +1,15 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `kotlin-dsl`
     `java-gradle-plugin`
+    `maven-publish`
     id("com.gradle.plugin-publish") version "0.12.0"
 }
 
 group = "io.github.simonschiller"
-version = "1.4.0" // Also update the version in the README
+version = "1.5.0" // Also update the version in the README
 
 repositories {
     google()
@@ -16,10 +18,12 @@ repositories {
 }
 
 dependencies {
-    implementation("com.android.tools.build:gradle:4.0.0")
+    compileOnly("com.android.tools.build:gradle:4.1.1")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+    val junitVersion = "5.7.0"
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -28,6 +32,12 @@ tasks.withType<KotlinCompile>().configureEach {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    dependsOn("publishToMavenLocal")
+
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = TestExceptionFormat.FULL
+    }
 }
 
 gradlePlugin {

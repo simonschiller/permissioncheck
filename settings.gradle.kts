@@ -1,4 +1,4 @@
 rootProject.name = "permissioncheck"
 
-include(":sample:app")
-include(":sample:library")
+include(":plugin")
+//include(":sample:app", ":sample:library") // Uncomment to use the sample
