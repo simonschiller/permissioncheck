@@ -1,4 +1,4 @@
-package io.github.simonschiller.permissioncheck.internal.config
+package io.github.simonschiller.permissioncheck.config
 
 import com.android.Version
 import org.gradle.util.VersionNumber
@@ -10,7 +10,8 @@ internal object TaskConfiguratorFactory {
         val version = VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
         return when {
             version <= VersionNumber.parse("4.0.1") -> TaskConfiguratorV1()
-            else -> TaskConfiguratorV2()
+            version <= VersionNumber.parse("4.1.2") -> TaskConfiguratorV2()
+            else -> TaskConfiguratorV3()
         }
     }
 }

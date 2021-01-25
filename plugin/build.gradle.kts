@@ -1,43 +1,41 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    `kotlin-dsl`
+    kotlin("jvm")
     `java-gradle-plugin`
     `maven-publish`
     id("com.gradle.plugin-publish") version "0.12.0"
 }
 
 group = "io.github.simonschiller"
-version = "1.5.0" // Also update the version in the README
+version = "1.6.0" // Also update the version in the README
 
-repositories {
-    google()
-    mavenCentral()
-    jcenter()
-}
+val uber: Configuration by configurations.creating
 
 dependencies {
-    compileOnly("com.android.tools.build:gradle:4.1.1")
+    compileOnly(gradleKotlinDsl())
+    compileOnly("com.android.tools.build:gradle:4.2.0-beta03")
 
-    val junitVersion = "5.7.0"
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    uber(project(":plugin-configurator-v1"))
+    uber(project(":plugin-configurator-v2"))
+    uber(project(":plugin-configurator-v3"))
+    uber(project(":plugin-core"))
+
+    testRuntimeOnly(Dependencies.JUNIT_5_ENGINE)
+    testImplementation(Dependencies.JUNIT_5_API)
+    testImplementation(Dependencies.JUNIT_5_PARAMS)
+    testImplementation(gradleKotlinDsl())
 }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalStdlibApi"
+configurations {
+    compileClasspath.configure { extendsFrom(uber) }
+}
+
+// Publish all modules as part of a single uber plugin JAR
+tasks.withType<Jar>().configureEach {
+    from(uber.asSequence().filter { it.startsWith(rootDir) }.map { zipTree(it) }.asIterable())
 }
 
 tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
     dependsOn("publishToMavenLocal")
-
-    testLogging {
-        events("passed", "skipped", "failed")
-        exceptionFormat = TestExceptionFormat.FULL
-    }
 }
 
 gradlePlugin {
