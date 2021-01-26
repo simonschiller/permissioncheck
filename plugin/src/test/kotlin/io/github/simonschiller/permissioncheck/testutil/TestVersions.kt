@@ -27,7 +27,7 @@ class TestVersions : ArgumentsProvider {
         private val AGP_VERSIONS = listOf(
             "4.2.0-beta03" to "6.7.1",
             "4.1.2" to "6.5",
-            "4.0.1" to "6.1.1"
+            "4.0.2" to "6.1.1"
         )
 
         val LATEST_GRADLE_VERSION = GRADLE_VERSIONS.first()
