@@ -1,6 +1,6 @@
-[![Build Status](https://img.shields.io/travis/com/simonschiller/permissioncheck)](https://travis-ci.com/github/simonschiller/permissioncheck)
+[![Build Status](https://img.shields.io/github/workflow/status/simonschiller/permissioncheck/CI)](https://github.com/simonschiller/permissioncheck/actions)
 [![GitHub Release](https://img.shields.io/github/v/release/simonschiller/permissioncheck)](https://github.com/simonschiller/permissioncheck/releases)
-[![License](https://img.shields.io/github/license/simonschiller/permissioncheck)](https://github.com/simonschiller/permissioncheck/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/simonschiller/permissioncheck)](https://github.com/simonschiller/permissioncheck/blob/main/LICENSE)
 
 # PermissionCheck
 
