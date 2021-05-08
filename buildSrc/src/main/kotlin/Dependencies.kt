@@ -1,5 +1,5 @@
 object Versions { // See https://mvnrepository.com
-    const val JUNIT_5 = "5.7.0"
+    const val JUNIT_5 = "5.7.1"
 }
 
 object Dependencies {
