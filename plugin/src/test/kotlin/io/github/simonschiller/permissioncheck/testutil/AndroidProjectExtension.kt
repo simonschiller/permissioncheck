@@ -105,7 +105,6 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
 		            google()
 		            mavenCentral()
                     mavenLocal()
-		            jcenter()
 	            }
 
 	            dependencies {
@@ -128,7 +127,6 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
             repositories {
                 google()
                 mavenCentral()
-                jcenter()
             }
 
             android {

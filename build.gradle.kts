@@ -7,7 +7,6 @@ buildscript {
 		google()
 		mavenCentral()
 		mavenLocal()
-		jcenter()
 	}
 	dependencies {
 		classpath("com.android.tools.build:gradle:4.2.0")
@@ -21,7 +20,6 @@ allprojects {
 	repositories {
 		google()
 		mavenCentral()
-		jcenter()
 	}
 }
 
@@ -29,7 +27,6 @@ subprojects {
 	repositories {
 		google()
 		mavenCentral()
-		jcenter()
 	}
 
 	tasks.withType<KotlinCompile>().configureEach {
