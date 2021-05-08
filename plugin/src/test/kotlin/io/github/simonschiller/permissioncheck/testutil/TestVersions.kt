@@ -25,7 +25,7 @@ class TestVersions : ArgumentsProvider {
 
         // See https://developer.android.com/studio/releases/gradle-plugin, with respective minimum Gradle version
         private val AGP_VERSIONS = listOf(
-            "4.2.0-beta03" to "6.7.1",
+            "4.2.0" to "6.7.1",
             "4.1.2" to "6.5",
             "4.0.2" to "6.1.1"
         )
