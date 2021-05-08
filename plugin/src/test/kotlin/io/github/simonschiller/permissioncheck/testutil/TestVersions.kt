@@ -21,7 +21,17 @@ class TestVersions : ArgumentsProvider {
     companion object {
 
         // See https://gradle.org/releases
-        private val GRADLE_VERSIONS = listOf("6.8.1", "6.7.1", "6.6.1", "6.5.1", "6.4.1", "6.3", "6.2.2", "6.1.1")
+        private val GRADLE_VERSIONS = listOf(
+            "7.0",
+            "6.8.3",
+            "6.7.1",
+            "6.6.1",
+            "6.5.1",
+            "6.4.1",
+            "6.3",
+            "6.2.2",
+            "6.1.1"
+        )
 
         // See https://developer.android.com/studio/releases/gradle-plugin, with respective minimum Gradle version
         private val AGP_VERSIONS = listOf(
