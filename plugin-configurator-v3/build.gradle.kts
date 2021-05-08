@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     compileOnly(gradleKotlinDsl())
-    compileOnly("com.android.tools.build:gradle:4.2.0-beta03")
+    compileOnly("com.android.tools.build:gradle:4.2.0")
 
     api(project(":plugin-core"))
 }
