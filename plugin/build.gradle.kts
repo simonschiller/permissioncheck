@@ -12,11 +12,12 @@ val uber: Configuration by configurations.creating
 
 dependencies {
     compileOnly(gradleKotlinDsl())
-    compileOnly("com.android.tools.build:gradle:4.2.0")
+    compileOnly("com.android.tools.build:gradle:7.0.0-beta03")
 
     uber(project(":plugin-configurator-v1"))
     uber(project(":plugin-configurator-v2"))
     uber(project(":plugin-configurator-v3"))
+    uber(project(":plugin-configurator-v4"))
     uber(project(":plugin-core"))
 
     testRuntimeOnly(Dependencies.JUNIT_5_ENGINE)
