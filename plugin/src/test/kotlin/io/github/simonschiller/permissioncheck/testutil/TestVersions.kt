@@ -11,7 +11,7 @@ class TestVersions : ArgumentsProvider {
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
         val arguments = AGP_VERSIONS.flatMap { agpVersion ->
             GRADLE_VERSIONS
-                .filter { gradleVersion -> VersionNumber.parse(agpVersion) isCompatibleWith VersionNumber.parse(gradleVersion) }
+                .filter { gradleVersion -> VersionNumber.parse(agpVersion).baseVersion isCompatibleWith VersionNumber.parse(gradleVersion).baseVersion }
                 .map { gradleVersion -> Arguments.of(gradleVersion, agpVersion) }
         }
         return arguments.stream()
@@ -19,6 +19,7 @@ class TestVersions : ArgumentsProvider {
 
     // Checks if a AGP version (receiver) is compatible with a certain version of Gradle
     private infix fun VersionNumber.isCompatibleWith(gradleVersion: VersionNumber) = when {
+        this >= VersionNumber.parse("7.0.0") -> gradleVersion >= VersionNumber.parse("7.0")
         this >= VersionNumber.parse("4.2.0") -> gradleVersion >= VersionNumber.parse("6.7.1")
         this >= VersionNumber.parse("4.1.0") -> gradleVersion >= VersionNumber.parse("6.5")
         this >= VersionNumber.parse("4.0.0") -> gradleVersion >= VersionNumber.parse("6.1.1") && gradleVersion < VersionNumber.parse("7.0")
@@ -29,7 +30,8 @@ class TestVersions : ArgumentsProvider {
 
         // See https://gradle.org/releases
         private val GRADLE_VERSIONS = listOf(
-            "7.0",
+            "7.1.1",
+            "7.0.2",
             "6.8.3",
             "6.7.1",
             "6.6.1",
@@ -37,14 +39,15 @@ class TestVersions : ArgumentsProvider {
             "6.4.1",
             "6.3",
             "6.2.2",
-            "6.1.1"
+            "6.1.1",
         )
 
         // See https://developer.android.com/studio/releases/gradle-plugin
         private val AGP_VERSIONS = listOf(
-            "4.2.0",
+            "7.0.0",
+            "4.2.2",
             "4.1.2",
-            "4.0.2"
+            "4.0.2",
         )
 
         val LATEST_GRADLE_VERSION = GRADLE_VERSIONS.first()
