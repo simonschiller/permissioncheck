@@ -43,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.6.0"
+    id "io.github.simonschiller.permissioncheck" version "1.7.0"
 }
 ```
 
@@ -57,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.6.0"
+        classpath "io.github.simonschiller:permissioncheck:1.7.0"
     }
 }
 ```
