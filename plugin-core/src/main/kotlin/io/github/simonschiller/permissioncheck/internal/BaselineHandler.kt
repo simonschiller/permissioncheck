@@ -1,6 +1,7 @@
 package io.github.simonschiller.permissioncheck.internal
 
 import io.github.simonschiller.permissioncheck.internal.data.BasePermission
+import io.github.simonschiller.permissioncheck.internal.data.Feature
 import io.github.simonschiller.permissioncheck.internal.data.Permission
 import io.github.simonschiller.permissioncheck.internal.data.Sdk23Permission
 import io.github.simonschiller.permissioncheck.internal.util.appendElement
@@ -76,6 +77,13 @@ internal class BaselineHandler(private val baselineFile: File) {
                 val name = element.getAttribute("name")
                 val maxSdkVersion = element.getAttribute("maxSdkVersion").toIntOrNull()
                 variantPermissions += Sdk23Permission(name, maxSdkVersion)
+            }
+
+            val features = variant.getElementsByTagName("uses-feature")
+            features.forEach { element ->
+                val name = element.getAttribute("name")
+                val required = element.getAttribute("required").toBooleanStrictOrNull()
+                variantPermissions += Feature(name, required)
             }
 
             permissions[variantName] = variantPermissions

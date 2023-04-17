@@ -100,8 +100,8 @@ internal class HtmlReporter(private val reportFile: File) : Reporter {
         val oldPermission = when (violation) {
             is Violation.Added -> null
             is Violation.Removed -> violation.permission
-            is Violation.MaxSdkIncreased -> violation.permission.copy(maxSdkVersion = violation.from)
-            is Violation.MaxSdkDecreased -> violation.permission.copy(maxSdkVersion = violation.from)
+            is Violation.MaxSdkIncreased -> violation.permission.copy(maxSdkVersion = violation.from, required = false)
+            is Violation.MaxSdkDecreased -> violation.permission.copy(maxSdkVersion = violation.from, required = false)
         }
 
         // Removed code snippet
