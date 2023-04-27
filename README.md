@@ -2,23 +2,23 @@
 [![GitHub Release](https://img.shields.io/github/v/release/simonschiller/permissioncheck)](https://github.com/simonschiller/permissioncheck/releases)
 [![License](https://img.shields.io/github/license/simonschiller/permissioncheck)](https://github.com/simonschiller/permissioncheck/blob/main/LICENSE)
 
-# PermissionCheck
+# ManifestCheck is a fork of PermissionsCheck with some addons
 
-In large scale Android applications, it can be hard to continuously monitor app permissions to make sure no unintended permissions are introduced by third-party libraries. PermissionCheck helps you to detect such permission regressions easily. 
+In large scale Android applications, it can be hard to continuously monitor app permissions/features to make sure no unintended permissions/features are introduced by third-party libraries. ManifestCheck helps you to detect such permission and feature regressions easily. By features we mean the <uses-feature> elements declared in the app manifest to filter your app from devices that don't meet its hardware and software requirements.
 
 ## Usage
 
-After the PermissionCheck plugin is applied, you can use the `checkPermissions` task to generate the initial baseline file. The task will fail on the initial run, to avoid creating baselines on accident. You should include the generated baseline file your VCS.
+After the ManifestCheck plugin is applied, you can use the `checkPermissions` task to generate the initial baseline file. The task will fail on the initial run, to avoid creating baselines on accident. You should include the generated baseline file your VCS.
 
-Once the baseline exists, each subsequent invocation of `checkPermissions` will compare the current app permissions against the created baseline. The task will fail if changes are detected, allowing you to automatically catch regressions by running this task as part of your CI pipeline. These tasks will also run as part of the standard Gradle `check` task. In case you only want to verify a single variant, you can use the `check<Variant>Permissions` tasks.
+Once the baseline exists, each subsequent invocation of `checkPermissions` will compare the current app permissions & features against the created baseline. The task will fail if changes are detected, allowing you to automatically catch regressions by running this task as part of your CI pipeline. These tasks will also run as part of the standard Gradle `check` task. In case you only want to verify a single variant, you can use the `check<Variant>Permissions` tasks.
 
 #### Recreating the baseline
 
-When you deliberately want to add new permissions to the app, you need to recreate the baseline so it matches the updated permissions. You can either add the new entry to the baseline manually or just recreate it using `checkPermissions --recreate`.
+When you deliberately want to add new permissions/features to the app, you need to recreate the baseline so it matches the updated permissions/features. You can either add the new entry to the baseline manually or just recreate it using `checkPermissions --recreate`.
 
 #### Strict mode
 
-By default, PermissionCheck only reports issues that would cause the app to require more permissions than specified in the baseline. In case a permission is removed or the max SDK of a permission is decreased, the tasks would not fail. To also detect these cases, you can enable strict mode in the task configuration (see next section) or use the `--strict` command line option.
+By default, ManifestCheck only reports issues that would cause the app to require more permissions/features than specified in the baseline. In case a permission is removed or the max SDK of a permission is decreased, the tasks would not fail. To also detect these cases, you can enable strict mode in the task configuration (see next section) or use the `--strict` command line option.
 
 #### Configuring the tasks
 
@@ -43,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "io.github.simonschiller.permissioncheck" version "1.7.0"
+    id "com.telefonica.manifestchecker" version "1.0.0"
 }
 ```
 
@@ -57,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.simonschiller:permissioncheck:1.7.0"
+        classpath "com.telefonica:manifestchecker:1.0.0"
     }
 }
 ```
@@ -65,10 +65,10 @@ buildscript {
 When you're using the legacy plugin API, you also have to apply the plugin in the `build.gradle` of your module.
 
 ```groovy
-apply plugin: "io.github.simonschiller.permissioncheck"
+apply plugin: "com.telefonica.manifestchecker"
 ```
 
-You can also find instructions on how to use the PermissionCheck plugin on the [Gradle plugin portal](https://plugins.gradle.org/plugin/io.github.simonschiller.permissioncheck).
+You can also find instructions on how to use the PermissionCheck plugin on the [Gradle plugin portal of the original library](https://plugins.gradle.org/plugin/io.github.simonschiller.permissioncheck).
 
 ## Working with this project
 
