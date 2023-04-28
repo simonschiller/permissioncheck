@@ -5,8 +5,8 @@ plugins {
     id("com.gradle.plugin-publish") version "0.14.0"
 }
 
-group = "io.github.simonschiller"
-version = "1.7.0" // Also update the version in the README
+group = "com.telefonica"
+version = "1.0.0" // Also update the version in the README
 
 val uber: Configuration by configurations.creating
 
@@ -41,27 +41,27 @@ tasks.withType<Test>().configureEach {
 
 gradlePlugin {
     plugins {
-        create("permissioncheck") {
-            id = "io.github.simonschiller.permissioncheck"
+        create("manifestchecker") {
+            id = "com.telefonica.manifestchecker"
             implementationClass = "io.github.simonschiller.permissioncheck.PermissionCheckPlugin"
         }
     }
 }
 
 pluginBundle {
-    website = "https://github.com/simonschiller/permissioncheck"
-    vcsUrl = "https://github.com/simonschiller/permissioncheck"
-    description = "PermissionCheck is a Gradle plugin that helps you catch Android permission regressions automatically."
+    website = "https://github.com/Telefonica/android-permissioncheck"
+    vcsUrl = "https://github.com/Telefonica/android-permissioncheck"
+    description = "ManifestChecker is a Gradle plugin that helps you catch Android permission/features regressions automatically, based on simonschiller permissioncheck plugin."
     tags = listOf("android", "permissions")
 
     mavenCoordinates {
         groupId = project.group.toString()
-        artifactId = "permissioncheck"
+        artifactId = "manifestchecker"
     }
 
     (plugins) {
-        "permissioncheck" {
-            displayName = "PermissionCheck"
+        "manifestchecker" {
+            displayName = "ManifestCheck"
         }
     }
 }
