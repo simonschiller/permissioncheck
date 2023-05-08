@@ -7,6 +7,7 @@
         <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_COARSE_LOCATION"/>
         <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_FINE_LOCATION"/>
         <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+        <uses-feature name="android.hardware.camera.autofocus" required="false"/>
     </variant>
     <variant name="release">
         <uses-permission name="android.permission.CAMERA"/>
@@ -15,5 +16,6 @@
         <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_COARSE_LOCATION"/>
         <uses-permission maxSdkVersion="26" name="android.permission.ACCESS_FINE_LOCATION"/>
         <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+        <uses-feature name="android.hardware.camera.autofocus" required="false"/>
     </variant>
 </baseline>
