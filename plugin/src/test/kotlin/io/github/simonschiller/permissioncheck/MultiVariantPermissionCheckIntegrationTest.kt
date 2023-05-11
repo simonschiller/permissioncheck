@@ -35,11 +35,13 @@ class MultiVariantPermissionCheckIntegrationTest {
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
                 </variant>
                 <variant name="release">
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
                 </variant>
             </baseline>
 
@@ -77,11 +79,13 @@ class MultiVariantPermissionCheckIntegrationTest {
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
                 </variant>
                 <variant name="debug">
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
                 </variant>
             </baseline>
             
@@ -107,11 +111,13 @@ class MultiVariantPermissionCheckIntegrationTest {
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
                 </variant>
                 <variant name="release">
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
+                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
                 </variant>
             </baseline>
             
@@ -141,7 +147,7 @@ class MultiVariantPermissionCheckIntegrationTest {
             agpVersion = agpVersion,
             expectFailure = true
         )
-        assertTrue(buildResult.output.contains("Found 2 violation(s)"))
+        assertTrue(buildResult.output.contains("Found 3 violation(s)"))
     }
 
     @ParameterizedTest
@@ -155,7 +161,7 @@ class MultiVariantPermissionCheckIntegrationTest {
             agpVersion = agpVersion,
             expectFailure = true
         )
-        assertTrue(buildResult.output.contains("Found 3 violation(s)"))
+        assertTrue(buildResult.output.contains("Found 4 violation(s)"))
     }
 
     @ParameterizedTest
@@ -175,7 +181,7 @@ class MultiVariantPermissionCheckIntegrationTest {
             agpVersion = agpVersion,
             expectFailure = true
         )
-        assertTrue(buildResult.output.contains("Found 3 violation(s)"))
+        assertTrue(buildResult.output.contains("Found 4 violation(s)"))
     }
 
     @ParameterizedTest

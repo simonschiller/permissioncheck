@@ -68,4 +68,17 @@ internal sealed class Violation {
             setAttribute("previousMaxSdkVersion", from?.toString() ?: "-")
         }
     }
+
+    data class RequiredChanged(override val permission: BasePermission, val required: Boolean?) : Violation() {
+        override val message = "Required of '$permission' has changed (required ${required ?: "-"})"
+
+        override val type = "required-changed"
+
+        override val title = "Required changed"
+        override val description = "Required has changed."
+
+        override fun toXmlElement(document: Document) = super.toXmlElement(document).apply {
+            setAttribute("previousRequired", required?.toString() ?: "-")
+        }
+    }
 }
