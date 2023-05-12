@@ -30,25 +30,13 @@ class TestVersions : ArgumentsProvider {
 
         // See https://gradle.org/releases
         private val GRADLE_VERSIONS = listOf(
+            "7.4.2",
             "7.2",
-            "7.1.1",
-            "7.0.2",
-            "6.8.3",
-            "6.7.1",
-            "6.6.1",
-            "6.5.1",
-            "6.4.1",
-            "6.3",
-            "6.2.2",
-            "6.1.1",
         )
 
         // See https://developer.android.com/studio/releases/gradle-plugin
         private val AGP_VERSIONS = listOf(
             "7.0.0",
-            "4.2.2",
-            "4.1.2",
-            "4.0.2",
         )
 
         val LATEST_GRADLE_VERSION = GRADLE_VERSIONS.first()

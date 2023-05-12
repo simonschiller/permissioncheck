@@ -52,7 +52,13 @@ internal class PermissionChecker {
         return when {
             maxSdkOrder < 0 -> Violation.MaxSdkDecreased(manifest, baseline.maxSdkVersion)
             maxSdkOrder > 0 -> Violation.MaxSdkIncreased(manifest, baseline.maxSdkVersion)
-            else -> error("Could not determine violation for permissions $manifest and $baseline")
+            else -> {
+                if (manifest.required != baseline.required) {
+                    Violation.RequiredChanged(manifest, baseline.required)
+                } else {
+                    error("Could not determine violation for permissions $manifest and $baseline")
+                }
+            }
         }
     }
 }
