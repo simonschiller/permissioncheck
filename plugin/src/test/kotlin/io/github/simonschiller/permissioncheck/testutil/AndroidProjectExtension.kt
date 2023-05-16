@@ -56,27 +56,6 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
         """.trimIndent())
     }
 
-
-    fun setupBaselineWithFeatures() {
-        baselineFile.writeText("""
-            <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-            <baseline>
-                <variant name="debug">
-                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
-                    <uses-permission name="android.permission.INTERNET"/>
-                    <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
-                    <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
-                </variant>
-                <variant name="release">
-                    <uses-feature name="android.hardware.camera.autofocus" required="false"/>
-                    <uses-permission name="android.permission.INTERNET"/>
-                    <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
-                    <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
-                </variant>
-            </baseline>
-        """.trimIndent())
-    }
-
     fun setupBaselineWithViolations() {
         baselineFile.writeText("""
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -134,7 +113,7 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
 
 	            dependencies {
 		            classpath("com.android.tools.build:gradle:<AGP_VERSION>")
-                    classpath("io.github.simonschiller:plugin:+")
+                    classpath("com.telefonica:plugin:+")
 	            }
             }
             
@@ -147,7 +126,7 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
         val buildGradle = appDir.resolve("build.gradle")
         buildGradle.writeText("""
             apply plugin: "com.android.application"
-            apply plugin: "io.github.simonschiller.permissioncheck"
+            apply plugin: "com.telefonica.manifestcheck"
             
             repositories {
                 google()

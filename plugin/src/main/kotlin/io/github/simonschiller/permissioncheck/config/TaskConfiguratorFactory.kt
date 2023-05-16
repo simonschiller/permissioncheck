@@ -8,10 +8,7 @@ internal object TaskConfiguratorFactory {
     fun getTaskConfigurator(): TaskConfigurator {
         val version = VersionNumber.parse(getAndroidGradlePluginVersion())
         return when {
-            version <= VersionNumber.parse("4.0.2") -> TaskConfiguratorV1()
-            version <= VersionNumber.parse("4.1.2") -> TaskConfiguratorV2()
-            version <= VersionNumber.parse("4.2.2") -> TaskConfiguratorV3()
-            else -> TaskConfiguratorV4()
+            else -> TaskConfiguratorV1()
         }
     }
 

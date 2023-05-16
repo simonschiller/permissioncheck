@@ -15,9 +15,6 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:7.0.0")
 
     uber(project(":plugin-configurator-v1"))
-    uber(project(":plugin-configurator-v2"))
-    uber(project(":plugin-configurator-v3"))
-    uber(project(":plugin-configurator-v4"))
     uber(project(":plugin-core"))
 
     testRuntimeOnly(Dependencies.JUNIT_5_ENGINE)
