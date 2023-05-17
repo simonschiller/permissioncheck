@@ -49,4 +49,5 @@ gradlePlugin {
 pluginBundle {
     website = "https://https://github.com/Telefonica/android-permissioncheck"
     vcsUrl = "https://https://github.com/Telefonica/android-permissioncheck"
+    tags = listOf("manifestcheck", "permissions")
 }
