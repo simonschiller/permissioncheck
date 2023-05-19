@@ -1,6 +1,6 @@
 rootProject.name = "permissioncheck"
 
-include(":plugin")
+include(":manifestcheck")
 include(":plugin-configurator-v1")
 include(":plugin-core")
 

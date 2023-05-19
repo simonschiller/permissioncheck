@@ -113,7 +113,7 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
 
 	            dependencies {
 		            classpath("com.android.tools.build:gradle:<AGP_VERSION>")
-                    classpath("com.telefonica:plugin:+")
+                    classpath("com.telefonica:manifestcheck:+")
 	            }
             }
             
