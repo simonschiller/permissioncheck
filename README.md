@@ -43,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "com.telefonica.manifestchecker" version "1.0.0"
+    id "com.telefonica.manifestcheck" version "1.0.0"
 }
 ```
 
@@ -57,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.telefonica:manifestchecker:1.0.0"
+        classpath "com.telefonica:manifestcheck:1.0.0"
     }
 }
 ```
@@ -65,7 +65,7 @@ buildscript {
 When you're using the legacy plugin API, you also have to apply the plugin in the `build.gradle` of your module.
 
 ```groovy
-apply plugin: "com.telefonica.manifestchecker"
+apply plugin: "com.telefonica.manifestcheck"
 ```
 
 You can also find instructions on how to use the PermissionCheck plugin on the [Gradle plugin portal of the original library](https://plugins.gradle.org/plugin/io.github.simonschiller.permissioncheck).
@@ -87,7 +87,7 @@ To work with the sample project, you first have to publish the plugin to your lo
 ## License
 
 ```
-Copyright 2020 Simon Schiller
+Copyright 2020 Simon Schiller + Telefonica 2023
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

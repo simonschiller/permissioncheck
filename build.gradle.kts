@@ -12,7 +12,7 @@ buildscript {
 		classpath("com.android.tools.build:gradle:7.0.0")
 		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$embeddedKotlinVersion")
 
-//		classpath("io.github.simonschiller:plugin:+") // Uncomment to use the sample
+//		classpath("com.telefonica:manifestcheck:+") // Uncomment to use the sample
 	}
 }
 

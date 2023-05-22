@@ -1,14 +1,14 @@
 plugins {
 	id("com.android.application")
-	id("io.github.simonschiller.permissioncheck")
+	id("com.telefonica.manifestcheck")
 }
 
 android {
-	compileSdkVersion(30)
+	compileSdkVersion(33)
 
 	defaultConfig {
-		minSdkVersion(21)
-		targetSdkVersion(30)
+		minSdkVersion(23)
+		targetSdkVersion(33)
 	}
 
 	lintOptions {
