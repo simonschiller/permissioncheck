@@ -42,12 +42,14 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
             <baseline>
                 <variant name="debug">
                     <uses-feature name="android.hardware.camera.autofocus" required="false"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                 </variant>
                 <variant name="release">
                     <uses-feature name="android.hardware.camera.autofocus" required="false"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                     <uses-permission name="android.permission.INTERNET"/>
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -62,12 +64,14 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
             <baseline>
                 <variant name="debug">
                     <uses-feature name="android.hardware.camera.autofocus" required="true"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                     <uses-permission maxSdkVersion="24" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                     <uses-permission name="android.permission.ACCESS_COARSE_LOCATION"/>
                 </variant>
                 <variant name="release">
                     <uses-feature name="android.hardware.camera.autofocus" required="true"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                     <uses-permission maxSdkVersion="24" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                     <uses-permission name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -159,6 +163,7 @@ class AndroidProjectExtension : BeforeEachCallback, AfterEachCallback {
                 package="io.github.simonschiller.permissioncheck.sample.app">
 
                 <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+                <uses-feature android:glEsVersion="0x00020000" android:required="true" />
                 <uses-permission android:name="android.permission.INTERNET" />
                 <uses-permission android:name="android.permission.CAMERA" android:maxSdkVersion="26" />
                 <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE" />
