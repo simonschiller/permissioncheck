@@ -4,28 +4,39 @@ import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.util.*
 
-internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?, val required: Boolean?) : Comparable<BasePermission> {
+internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?, val required: Boolean?, val glEsVersion: String?) : Comparable<BasePermission> {
     abstract val tag: String
 
     fun toXmlElement(document: Document): Element = document.createElement(tag).apply {
-        setAttribute("name", name)
+        if (name.isNotEmpty()) {
+            setAttribute("name", name)
+        }
         if (maxSdkVersion != null) {
             setAttribute("maxSdkVersion", maxSdkVersion.toString())
         }
         if (required != null) {
             setAttribute("required", required.toString())
         }
+        if (glEsVersion != null) {
+            setAttribute("glEsVersion", glEsVersion)
+        }
     }
 
-    abstract fun copy(name: String = this.name, maxSdkVersion: Int? = this.maxSdkVersion, required: Boolean?): BasePermission
+    abstract fun copy(name: String = this.name, maxSdkVersion: Int? = this.maxSdkVersion, required: Boolean?, glEsVersion: String?): BasePermission
 
     override fun toString(): String {
-        val builder = StringBuilder("""<$tag android:name="$name" """)
+        val builder = StringBuilder("""<$tag """)
+        if (name.isNotEmpty()) {
+            builder.append("""android:name="$name" """)
+        }
         if (maxSdkVersion != null) {
             builder.append("""android:maxSdkVersion="$maxSdkVersion" """)
         }
         if (required != null) {
             builder.append("""android:required="$required" """)
+        }
+        if (required != null) {
+            builder.append("""android:glEsVersion="$glEsVersion" """)
         }
         return builder.append("/>").toString()
     }
@@ -33,7 +44,7 @@ internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is BasePermission) return false
-        return name == other.name && maxSdkVersion == other.maxSdkVersion && required == other.required && tag == other.tag
+        return name == other.name && maxSdkVersion == other.maxSdkVersion && required == other.required && glEsVersion == other.glEsVersion && tag == other.tag
     }
 
     override fun hashCode(): Int {
@@ -49,17 +60,17 @@ internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?
     }
 }
 
-internal class Permission(name: String, maxSdkVersion: Int? = null) : BasePermission(name, maxSdkVersion, null) {
+internal class Permission(name: String, maxSdkVersion: Int? = null) : BasePermission(name, maxSdkVersion, null, null) {
     override val tag: String = "uses-permission"
-    override fun copy(name: String, maxSdkVersion: Int?, required: Boolean?) = Permission(name, maxSdkVersion)
+    override fun copy(name: String, maxSdkVersion: Int?, required: Boolean?, glEsVersion: String?) = Permission(name, maxSdkVersion)
 }
 
-internal class Sdk23Permission(name: String, maxSdkVersion: Int? = null) : BasePermission(name, maxSdkVersion, null) {
+internal class Sdk23Permission(name: String, maxSdkVersion: Int? = null) : BasePermission(name, maxSdkVersion, null, null) {
     override val tag: String = "uses-permission-sdk-23"
-    override fun copy(name: String, maxSdkVersion: Int?, required: Boolean?) = Sdk23Permission(name, maxSdkVersion)
+    override fun copy(name: String, maxSdkVersion: Int?, required: Boolean?, glEsVersion: String?) = Sdk23Permission(name, maxSdkVersion)
 }
 
-internal class Feature(name: String, required: Boolean? = null) : BasePermission(name, null, required) {
+internal class Feature(name: String, required: Boolean? = null, glEsVersion: String? = null) : BasePermission(name, null, required, glEsVersion) {
     override val tag: String = "uses-feature"
-    override fun copy(name: String, maxSdkVersion: Int?, required: Boolean?) = Feature(name, required)
+    override fun copy(name: String, maxSdkVersion: Int?, required: Boolean?, glEsVersion: String?) = Feature(name, required, glEsVersion)
 }

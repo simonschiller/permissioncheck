@@ -68,12 +68,12 @@ class PermissionsTest {
     @Test
     fun `Copying permissions works`() {
         val original = Permission("android.permission.CAMERA", 26)
-        val exactCopy = original.copy(required = false)
+        val exactCopy = original.copy(required = false, glEsVersion = null)
 
         assertEquals(original, exactCopy)
         assertNotSame(original, exactCopy)
 
-        val changedCopy = original.copy(maxSdkVersion = null, required = false)
+        val changedCopy = original.copy(maxSdkVersion = null, required = false, glEsVersion = null)
         assertEquals("android.permission.CAMERA", changedCopy.name)
         assertNull(changedCopy.maxSdkVersion)
     }

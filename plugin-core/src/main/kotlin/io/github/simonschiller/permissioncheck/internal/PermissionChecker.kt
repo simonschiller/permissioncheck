@@ -55,6 +55,8 @@ internal class PermissionChecker {
             else -> {
                 if (manifest.required != baseline.required) {
                     Violation.RequiredChanged(manifest, baseline.required)
+                } else if (manifest.glEsVersion != baseline.glEsVersion) {
+                    Violation.GlEsVersionChanged(manifest, baseline.glEsVersion)
                 } else {
                     error("Could not determine violation for permissions $manifest and $baseline")
                 }

@@ -81,4 +81,17 @@ internal sealed class Violation {
             setAttribute("previousRequired", required?.toString() ?: "-")
         }
     }
+
+    data class GlEsVersionChanged(override val permission: BasePermission, val glEsVersion: String?) : Violation() {
+        override val message = "GlEsVersion of '$permission' has changed (glEsVersion ${glEsVersion ?: "-"})"
+
+        override val type = "glEsVersion-changed"
+
+        override val title = "glEsVersion changed"
+        override val description = "glEsVersion has changed."
+
+        override fun toXmlElement(document: Document) = super.toXmlElement(document).apply {
+            setAttribute("previousRequired", glEsVersion?.toString() ?: "-")
+        }
+    }
 }
