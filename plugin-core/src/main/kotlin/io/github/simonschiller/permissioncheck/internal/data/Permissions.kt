@@ -35,7 +35,7 @@ internal abstract class BasePermission(val name: String, val maxSdkVersion: Int?
         if (required != null) {
             builder.append("""android:required="$required" """)
         }
-        if (required != null) {
+        if (glEsVersion != null) {
             builder.append("""android:glEsVersion="$glEsVersion" """)
         }
         return builder.append("/>").toString()
