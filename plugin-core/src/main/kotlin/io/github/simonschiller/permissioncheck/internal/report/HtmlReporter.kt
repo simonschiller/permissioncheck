@@ -100,9 +100,10 @@ internal class HtmlReporter(private val reportFile: File) : Reporter {
         val oldPermission = when (violation) {
             is Violation.Added -> null
             is Violation.Removed -> violation.permission
-            is Violation.MaxSdkIncreased -> violation.permission.copy(maxSdkVersion = violation.from, required = false)
-            is Violation.MaxSdkDecreased -> violation.permission.copy(maxSdkVersion = violation.from, required = false)
-            is Violation.RequiredChanged -> violation.permission.copy(maxSdkVersion = null, required = violation.required)
+            is Violation.MaxSdkIncreased -> violation.permission.copy(maxSdkVersion = violation.from, required = false, glEsVersion = null)
+            is Violation.MaxSdkDecreased -> violation.permission.copy(maxSdkVersion = violation.from, required = false, glEsVersion = null)
+            is Violation.RequiredChanged -> violation.permission.copy(maxSdkVersion = null, required = violation.required, glEsVersion = null)
+            is Violation.GlEsVersionChanged -> violation.permission.copy(maxSdkVersion = null, required = null, glEsVersion = violation.glEsVersion)
         }
 
         // Removed code snippet
@@ -116,6 +117,7 @@ internal class HtmlReporter(private val reportFile: File) : Reporter {
             is Violation.MaxSdkIncreased -> violation.permission
             is Violation.MaxSdkDecreased -> violation.permission
             is Violation.RequiredChanged -> violation.permission
+            is Violation.GlEsVersionChanged -> violation.permission
         }
 
         // Added code snippet

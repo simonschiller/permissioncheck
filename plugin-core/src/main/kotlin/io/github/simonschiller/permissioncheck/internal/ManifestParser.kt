@@ -28,7 +28,7 @@ internal class ManifestParser {
 
         // Parse features
         permissions += parseNodes(document, "uses-feature").map { node ->
-            Feature(node.name, node.required)
+            Feature(node.name, node.required, node.glEsVersion)
         }
 
         return permissions
@@ -44,10 +44,11 @@ internal class ManifestParser {
             val name = element.getAttributeNS(namespace, "name")
             val maxSdkVersion = element.getAttributeNS(namespace, "maxSdkVersion").toIntOrNull()
             val required = element.getAttributeNS(namespace, "required").toBooleanStrictOrNull()
-            nodes += Node(name, maxSdkVersion, required)
+            val glEsVersion = element.getAttributeNS(namespace, "glEsVersion").takeIf { it.isNotEmpty() }
+            nodes += Node(name, maxSdkVersion, required, glEsVersion)
         }
         return nodes.toSet()
     }
 
-    data class Node(val name: String, val maxSdkVersion: Int?, val required: Boolean?)
+    data class Node(val name: String, val maxSdkVersion: Int?, val required: Boolean?, val glEsVersion: String?)
 }

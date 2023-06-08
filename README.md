@@ -43,7 +43,7 @@ To add the PermissionCheck plugin to your project, you have to add this block of
 
 ```groovy
 plugins {
-    id "com.telefonica.manifestcheck" version "1.0.0"
+    id "com.telefonica.manifestcheck" version "1.0.1"
 }
 ```
 
@@ -57,7 +57,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.telefonica:manifestcheck:1.0.0"
+        classpath "com.telefonica:manifestcheck:1.0.1"
     }
 }
 ```

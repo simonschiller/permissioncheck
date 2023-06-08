@@ -83,7 +83,8 @@ internal class BaselineHandler(private val baselineFile: File) {
             features.forEach { element ->
                 val name = element.getAttribute("name")
                 val required = element.getAttribute("required").toBooleanStrictOrNull()
-                variantPermissions += Feature(name, required)
+                val glEsVersion = element.getAttribute("glEsVersion").takeIf { it.isNotEmpty() }
+                variantPermissions += Feature(name, required, glEsVersion)
             }
 
             permissions[variantName] = variantPermissions

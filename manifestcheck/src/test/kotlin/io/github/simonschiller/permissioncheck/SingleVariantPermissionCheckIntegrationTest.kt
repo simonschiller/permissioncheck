@@ -36,9 +36,10 @@ class SingleVariantPermissionCheckIntegrationTest {
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                     <uses-feature name="android.hardware.camera.autofocus" required="false"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                 </variant>
             </baseline>
-            
+
         """.trimIndent()
         assertEquals(baseline, androidProject.baselineFile.readText().normaliseLineSeparators())
     }
@@ -79,6 +80,7 @@ class SingleVariantPermissionCheckIntegrationTest {
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                     <uses-feature name="android.hardware.camera.autofocus" required="false"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                 </variant>
             </baseline>
             
@@ -105,6 +107,7 @@ class SingleVariantPermissionCheckIntegrationTest {
                     <uses-permission maxSdkVersion="26" name="android.permission.CAMERA"/>
                     <uses-permission-sdk-23 name="android.permission.ACCESS_NETWORK_STATE"/>
                     <uses-feature name="android.hardware.camera.autofocus" required="false"/>
+                    <uses-feature glEsVersion="0x00020000" required="true"/>
                 </variant>
             </baseline>
             
